@@ -1,0 +1,725 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<script>window.PA_STANDALONE=true;</script>
+</head>
+<body>
+<title>16th-Century Port Authority</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Assistant:wght@400;600;700&family=Cinzel:wght@700;900&family=EB+Garamond:ital,wght@0,400;0,500;1,400&display=swap">
+<script src="https://cdn.tailwindcss.com/3.4.17"></script>
+<script>try{tailwind.config={corePlugins:{preflight:false}}}catch(e){}</script>
+<style>
+/* Layout: a customs-house desk. Simple form on the left, the live parchment document on the right. */
+:root{
+  --desk:#e7dcc3; --desk-2:#dccfb2; --panel:#f4ecd8; --panel-2:#ebe1ce; --input:#fbf7ec;
+  --fg:#2e2b1e; --muted:#6b6247; --line:#c8b68f;
+  --navy:#1d3557; --navy-ink:#1d3557; --brass:#b08d57; --brass-ink:#7f6230; --crimson:#8b1e1e;
+  --mast-bg:#1d3557; --mast-fg:#f4ecd8; --mast-muted:#d9c9a2; --on-dark:#f8f1df;
+  --sync:#2563eb; --async:#16a34a;
+  --ok:#2f6b2f; --warn:#9a6a10; --bad:#8b1e1e; --plague:#5b3f86;
+  --paper:#f4ecd8; --paper-2:#ebe1ce; --ink:#2e2b1e; --ink-soft:#5f5439; --doc-rule:#b08d57;
+  --st-approved:#1f6b33; --st-restricted:#a07416; --st-banished:#8b1e1e; --st-quarantine:#5b3f86;
+  --wax:#8b1e1e; --wax-hi:#b8433b; --wax-lo:#561010; --seal-fg:#f3d9cc;
+  --shadow:0 1px 0 rgba(46,43,30,.08), 0 14px 32px -14px rgba(46,43,30,.45);
+  --f-display:'Cinzel','Trajan Pro',Georgia,serif;
+  --f-doc:'EB Garamond',Garamond,'Times New Roman',Georgia,serif;
+  --f-ui:'Assistant','Segoe UI',system-ui,-apple-system,sans-serif;
+}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){
+  --desk:#15181e; --desk-2:#1c2028; --panel:#222630; --panel-2:#2a2f3a; --input:#1a1d24;
+  --fg:#ece3cc; --muted:#a99f86; --line:#3e4453; --navy-ink:#a9c2e8; --brass-ink:#d6b57d; --mast-bg:#101a2c;
+  --ok:#7cc77c; --warn:#e2b456; --bad:#ec8a84; --plague:#bba2e6;
+  --shadow:0 1px 0 rgba(0,0,0,.3), 0 18px 36px -14px rgba(0,0,0,.7); color-scheme:dark;
+}}
+:root[data-theme="dark"]{
+  --desk:#15181e; --desk-2:#1c2028; --panel:#222630; --panel-2:#2a2f3a; --input:#1a1d24;
+  --fg:#ece3cc; --muted:#a99f86; --line:#3e4453; --navy-ink:#a9c2e8; --brass-ink:#d6b57d; --mast-bg:#101a2c;
+  --ok:#7cc77c; --warn:#e2b456; --bad:#ec8a84; --plague:#bba2e6;
+  --shadow:0 1px 0 rgba(0,0,0,.3), 0 18px 36px -14px rgba(0,0,0,.7); color-scheme:dark;
+}
+*,*::before,*::after{box-sizing:border-box}
+[hidden]{display:none!important}
+body{margin:0;background:var(--desk);color:var(--fg);font-family:var(--f-ui);font-size:16px;line-height:1.5;-webkit-font-smoothing:antialiased}
+.wrap{max-width:1180px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.app button,.app input,.app select,.app textarea{font:inherit}
+.app input,.app select,.app textarea{color:inherit}
+:focus-visible{outline:3px solid var(--brass);outline-offset:2px}
+
+/* Masthead */
+.mast{position:relative;overflow:hidden;background:var(--mast-bg);color:var(--mast-fg);border-bottom:4px double var(--brass)}
+.mast canvas{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
+.mast-inner{position:relative;padding-block:20px 18px}
+.mast-title{margin:0;font-family:var(--f-display);font-weight:900;font-size:clamp(1.5rem,4vw,2.4rem);line-height:1.1;letter-spacing:.02em;text-wrap:balance}
+.mast-sub{margin-top:4px;font-size:.95rem;color:var(--mast-muted)}
+.mast-sub b{color:var(--mast-fg)}
+
+/* Tabs */
+.tabs{position:sticky;top:env(safe-area-inset-top,0px);z-index:30;background:var(--desk-2);border-bottom:1px solid var(--line)}
+.tabs-inner{display:flex;gap:6px;overflow-x:auto;padding-block:8px 0}
+.tab{flex:0 0 auto;border:1px solid var(--line);border-bottom:none;background:transparent;border-radius:8px 8px 0 0;padding:10px 16px;cursor:pointer;font-weight:700;color:var(--muted);white-space:nowrap}
+.tab:hover{color:var(--fg)}
+.tab[aria-selected="true"]{background:var(--panel);color:var(--fg);box-shadow:inset 0 3px 0 var(--brass);position:relative;top:1px}
+
+.main{padding-block:20px 44px}
+.intro{margin:0 0 16px;font-size:1.02rem;max-width:80ch}
+.intro b:first-child{font-family:var(--f-display)}
+
+.builder{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:24px;align-items:start}
+@media (max-width:960px){.builder{grid-template-columns:minmax(0,1fr)}}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:20px;box-shadow:var(--shadow);display:flex;flex-direction:column;gap:16px}
+.field{display:flex;flex-direction:column;gap:6px;min-width:0}
+.field > label,.lbl{font-size:.8rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.input,.select,.textarea{width:100%;background:var(--input);border:1px solid var(--line);border-radius:6px;padding:10px 12px;font-size:1rem}
+.textarea{min-height:96px;resize:vertical}
+.input:focus,.select:focus,.textarea:focus{outline:none;border-color:var(--brass);box-shadow:0 0 0 3px rgba(176,141,87,.35)}
+.invalid{border-color:var(--bad)!important;box-shadow:0 0 0 3px rgba(139,30,30,.25)!important;border-radius:8px}
+
+.choices{display:flex;flex-wrap:wrap;gap:8px}
+.choice{display:inline-flex;align-items:center;gap:8px;padding:9px 12px;border:2px solid var(--line);border-radius:8px;cursor:pointer;background:var(--input);font-weight:600}
+.choice input{accent-color:var(--navy);margin:0}
+.choice.sync.on{border-color:var(--sync);background:rgba(37,99,235,.10)}
+.choice.async.on{border-color:var(--async);background:rgba(22,163,74,.10)}
+.choice.mot.on{border-color:var(--brass);background:rgba(176,141,87,.16)}
+
+.slots{display:grid;grid-template-columns:auto minmax(0,1fr);gap:8px 10px;align-items:center}
+.numeral{font-family:var(--f-display);font-weight:700;color:var(--brass-ink);width:30px;text-align:center}
+
+/* Buttons */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border-radius:6px;padding:11px 16px;font-weight:700;cursor:pointer;border:1px solid transparent;line-height:1.2}
+.btn-primary{background:var(--navy);color:var(--on-dark);border-color:var(--brass)}
+.btn-primary:hover{filter:brightness(1.15)}
+.btn-wax{background:var(--crimson);color:var(--on-dark);border-color:#5e1010}
+.btn-ghost{background:transparent;color:var(--fg);border-color:var(--line)}
+.btn-ghost:hover{background:var(--panel-2)}
+.btn-big{padding:14px 18px;font-size:1.05rem;width:100%}
+.actions{display:flex;flex-direction:column;gap:8px;margin-top:14px}
+.actions .row{display:flex;gap:8px;flex-wrap:wrap}
+.actions .row .btn{flex:1 1 120px;white-space:nowrap}
+
+.preview-col{position:sticky;top:64px;min-width:0}
+@media (max-width:960px){.preview-col{position:static}}
+
+/* Parchment documents */
+.paper{position:relative;background:radial-gradient(ellipse at 20% 0%,rgba(255,255,255,.45),transparent 55%),radial-gradient(ellipse at 100% 100%,rgba(139,106,53,.22),transparent 60%),linear-gradient(var(--paper),var(--paper-2));color:var(--ink);font-family:var(--f-doc);font-size:1.06rem;line-height:1.45;padding:28px;border-radius:3px;box-shadow:var(--shadow),inset 0 0 60px rgba(120,86,40,.22)}
+.paper::before{content:"";position:absolute;inset:9px;border:4px double var(--doc-rule);opacity:.7;pointer-events:none}
+.doc-top{display:flex;justify-content:flex-end;position:relative}
+.gbadge{font-family:var(--f-ui);font-size:.72rem;font-weight:700;letter-spacing:.06em;padding:4px 10px;border-radius:999px;text-transform:uppercase;border:1px dashed var(--ink-soft);color:var(--ink-soft)}
+.gbadge.sync{background:var(--sync);color:#fff;border:1px solid var(--sync)}
+.gbadge.async{background:var(--async);color:#fff;border:1px solid var(--async)}
+.doc-title{font-family:var(--f-display);font-weight:900;font-size:clamp(1.4rem,3vw,1.8rem);text-align:center;margin:10px 0 14px;letter-spacing:.05em;line-height:1.1;text-wrap:balance}
+.ledger{margin:0;display:flex;flex-direction:column;gap:7px}
+.ledger > div{display:grid;grid-template-columns:120px minmax(0,1fr);gap:10px;align-items:baseline;border-bottom:1px dotted rgba(95,84,57,.55);padding-bottom:5px}
+@media (max-width:480px){.ledger > div{grid-template-columns:1fr;gap:0}}
+.ledger dt{font-family:var(--f-ui);font-size:.7rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-soft)}
+.ledger dd{margin:0;font-weight:500;overflow-wrap:anywhere}
+.ph{color:rgba(95,84,57,.6);font-style:italic;font-weight:400}
+.hold{margin-top:14px;border:1px solid rgba(139,106,53,.6)}
+.hold-h{font-family:var(--f-display);font-weight:700;font-size:.82rem;letter-spacing:.14em;text-transform:uppercase;text-align:center;padding:6px;border-bottom:1px solid rgba(139,106,53,.6);background:rgba(176,141,87,.14)}
+.hold-list{list-style:none;margin:0;padding:0}
+.hold-list li{display:grid;grid-template-columns:36px minmax(0,1fr);gap:8px;padding:6px 10px;border-bottom:1px dotted rgba(95,84,57,.4)}
+.hold-list li:last-child{border-bottom:0}
+.hold-num{font-family:var(--f-display);font-weight:700;color:var(--crimson)}
+.pitch{margin:14px 0 0;padding:2px 0 2px 14px;border-left:3px solid var(--doc-rule);font-style:italic;overflow-wrap:anywhere}
+.doc-foot{display:flex;justify-content:space-between;align-items:end;gap:14px;margin-top:18px}
+.sig{display:flex;flex-direction:column;gap:2px;min-width:0;flex:1}
+.sig-name{font-style:italic;font-size:1.15rem;border-bottom:1px solid var(--ink-soft);min-height:1.6em;overflow-wrap:anywhere}
+.sig-line{font-family:var(--f-ui);font-size:.66rem;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-soft)}
+.seal{position:relative;flex:none;width:70px;height:70px;border-radius:48% 52% 50% 46% / 50% 46% 54% 50%;background:radial-gradient(circle at 35% 30%,var(--wax-hi),var(--wax) 55%,var(--wax-lo));box-shadow:0 3px 5px rgba(0,0,0,.35),inset 0 -4px 7px rgba(0,0,0,.35);display:grid;place-items:center;color:var(--seal-fg);font-family:var(--f-display);font-weight:900;font-size:1rem;transform:rotate(-8deg)}
+.seal::before{content:"";position:absolute;inset:7px;border-radius:50%;border:2px dotted rgba(255,225,210,.4)}
+.seal.navy{--wax:#1d3557;--wax-hi:#3a5a86;--wax-lo:#0d1a2e}
+
+/* Stamp */
+.stamp-zone{display:grid;place-items:center;min-height:96px;margin:0 0 12px}
+.stamp{--c:var(--st-banished);font-family:var(--f-display);font-weight:900;text-transform:uppercase;letter-spacing:.08em;color:var(--c);border:5px double var(--c);border-radius:6px;padding:8px 20px;font-size:clamp(1.2rem,3.2vw,1.7rem);line-height:1.05;transform:rotate(-9deg);opacity:.9;mix-blend-mode:multiply;text-align:center}
+.stamp.pending{--c:rgba(95,84,57,.55);border-style:dashed;border-width:2px;font-size:.95rem;transform:none;mix-blend-mode:normal}
+.stamp.approved{--c:var(--st-approved)} .stamp.restricted{--c:var(--st-restricted)} .stamp.banished{--c:var(--st-banished)} .stamp.quarantine{--c:var(--st-quarantine)}
+.stamp.thunk{animation:thunk .35s cubic-bezier(.2,1.4,.4,1)}
+@keyframes thunk{0%{transform:rotate(-9deg) scale(1.8);opacity:0}100%{transform:rotate(-9deg) scale(1);opacity:.9}}
+@media (prefers-reduced-motion:reduce){.stamp.thunk{animation:none}}
+.rsec{margin-top:12px}
+.rsec h3{font-family:var(--f-ui);font-size:.7rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-soft);margin:0 0 3px}
+.rsec p{margin:0;overflow-wrap:anywhere;white-space:pre-wrap}
+
+/* Verdict buttons */
+.verdicts{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.vbtn{--c:var(--bad);color:var(--c);display:flex;align-items:center;gap:8px;text-align:left;padding:12px;border:2px solid var(--line);border-radius:8px;background:var(--input);cursor:pointer;font-weight:700;font-size:.95rem;line-height:1.2}
+.vbtn.approved{--c:var(--ok)} .vbtn.restricted{--c:var(--warn)} .vbtn.banished{--c:var(--bad)} .vbtn.quarantine{--c:var(--plague)}
+.vbtn:hover{border-color:var(--c)}
+.vbtn[aria-pressed="true"]{border-color:var(--c);box-shadow:inset 0 0 0 2px var(--c);background:var(--panel-2)}
+.lawbox{border-left:4px solid var(--navy-ink);background:var(--panel-2);border-radius:6px;padding:12px 14px;font-size:.93rem}
+.lawbox b{display:block;margin-bottom:4px}
+.lawbox ul{margin:0;padding-left:18px}
+.lawbox ul + b{margin-top:10px}
+.stamp-help{display:flex;flex-direction:column;gap:3px;margin-top:6px;padding:10px 12px;border:1px dashed var(--line);border-radius:6px;font-size:.9rem;color:var(--muted)}
+.stamp-help b{color:var(--fg)}
+
+/* Lawbook */
+.search{margin-bottom:16px}
+.lb-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+@media (max-width:860px){.lb-grid{grid-template-columns:minmax(0,1fr)}}
+.law{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:16px 18px;min-width:0}
+.law.wide{grid-column:1 / -1}
+.law h3{margin:0 0 8px;font-family:var(--f-display);font-weight:700;font-size:1.15rem;line-height:1.2}
+.law h3 span{font-family:var(--f-ui);font-weight:600;font-size:.9rem;color:var(--muted)}
+.law ul{margin:0;padding-left:20px;display:flex;flex-direction:column;gap:4px}
+.law .watch{margin:10px 0 0;font-size:.92rem;color:var(--muted)}
+.lookout{margin-top:12px;padding:10px 12px 12px;border:1px dashed var(--brass);border-radius:6px;background:var(--panel-2)}
+.lookout h4{margin:0 0 6px;font-size:.95rem}
+.law .lookout ul{list-style:none;padding-left:0;gap:6px}
+.law .watch.top{margin:0 0 10px}
+mark{background:rgba(176,141,87,.5);color:inherit;border-radius:2px}
+.cx-cols{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+@media (max-width:600px){.cx-cols{grid-template-columns:1fr}}
+.cx-cols h4{margin:0 0 6px;font-size:.95rem}
+.cx-list{list-style:none;padding:0!important;margin:0;gap:3px!important}
+.cx-list li{display:flex;justify-content:space-between;gap:10px;border-bottom:1px dotted var(--line);padding-bottom:3px}
+.cx-list li em{font-style:normal;color:var(--muted);font-size:.85rem;font-variant-numeric:tabular-nums;white-space:nowrap}
+.empty-note{padding:20px;text-align:center;color:var(--muted)}
+
+/* Example mode */
+.ex-banner{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:10px 16px;padding:12px 16px;margin-bottom:16px;border:2px dashed var(--crimson);border-radius:8px;background:rgba(139,30,30,.10);font-size:1.02rem}
+.paper.is-example{overflow:hidden;outline:3px dashed var(--crimson);outline-offset:4px}
+.paper.is-example::after{content:"EXAMPLE";position:absolute;left:50%;top:50%;transform:translate(-50%,-50%) rotate(-28deg);font-family:var(--f-display);font-weight:900;font-size:clamp(3rem,10vw,5.5rem);letter-spacing:.12em;color:rgba(139,30,30,.32);border:8px double rgba(139,30,30,.32);padding:4px 24px;pointer-events:none;white-space:nowrap;z-index:2}
+.btn:disabled,.vbtn:disabled{opacity:.55;cursor:not-allowed;filter:none}
+.vbtn[aria-pressed="true"]:disabled{opacity:1}
+.app input:disabled,.app select:disabled,.app textarea:disabled{opacity:.75;cursor:not-allowed}
+.choice:has(input:disabled){cursor:not-allowed;opacity:.8}
+
+/* Toast, modal, screenshot overlay */
+.toast{position:fixed;left:50%;bottom:calc(18px + env(safe-area-inset-bottom,0px));transform:translate(-50%,30px);opacity:0;pointer-events:none;background:var(--navy);color:var(--on-dark);border:2px solid var(--brass);padding:12px 18px;border-radius:8px;font-weight:700;box-shadow:0 12px 30px rgba(0,0,0,.35);z-index:100;max-width:min(520px,calc(100vw - 32px));transition:transform .25s,opacity .25s}
+.toast.show{opacity:1;transform:translate(-50%,0)}
+.toast.err{background:var(--crimson)}
+.modal,.shot{position:fixed;inset:0;z-index:90;background:rgba(10,12,18,.72);display:grid;place-items:center;padding:16px max(16px,env(safe-area-inset-right,0px)) 16px max(16px,env(safe-area-inset-left,0px));overflow:auto}
+.modal-box{background:var(--panel);color:var(--fg);border-radius:10px;padding:18px;width:min(600px,100%);display:flex;flex-direction:column;gap:10px}
+.modal-box h3{margin:0;font-family:var(--f-display)}
+.modal-box textarea{min-height:240px;font-family:ui-monospace,Menlo,Consolas,monospace;font-size:.85rem}
+.shot-inner{width:min(680px,100%);display:flex;flex-direction:column;gap:12px}
+.shot-bar{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:10px;color:var(--mast-fg)}
+.shot-bar .btn{color:var(--mast-fg);border-color:var(--mast-muted)}
+@media (prefers-reduced-motion:reduce){.toast{transition:none}}
+
+@media print{
+  body.print-manifest *{visibility:hidden}
+  body.print-manifest #manifest-card, body.print-manifest #manifest-card *{visibility:visible}
+  body.print-manifest #manifest-card{position:absolute;left:0;top:0;width:100%;box-shadow:none;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+}
+</style>
+
+<div class="app">
+<header class="mast">
+  <canvas id="rhumb" aria-hidden="true"></canvas>
+  <div class="wrap mast-inner">
+    <h1 class="mast-title">16th-Century Port Authority</h1>
+    <div class="mast-sub">Unit 4 · Contraband &amp; Customs Terminal · 🔵 Sync = <b>BLUE</b> post · 🟢 Async = <b>GREEN</b> post</div>
+  </div>
+</header>
+
+<nav class="tabs" aria-label="App sections">
+  <div class="wrap tabs-inner" role="tablist">
+    <button class="tab" role="tab" id="t-manifest" aria-controls="tab-manifest" aria-selected="true" data-tab="manifest">⚓ 1. Build Manifest</button>
+    <button class="tab" role="tab" id="t-inspect" aria-controls="tab-inspect" aria-selected="false" data-tab="inspect">📜 2. Inspect a Ship</button>
+    <button class="tab" role="tab" id="t-lawbook" aria-controls="tab-lawbook" aria-selected="false" data-tab="lawbook">🧭 Lawbook</button>
+  </div>
+</nav>
+
+<main class="wrap main">
+
+<!-- ============ TAB 1 ============ -->
+<section id="tab-manifest" role="tabpanel" aria-labelledby="t-manifest">
+  <p class="intro"><b>Captain:</b> Fill your ship with <b>4 goods</b> you want to trade, then copy your list into Padlet. Choose carefully! An inspector from the other group will check if anything is illegal (contraband), ahistorical (from the wrong time or place), or carrying sickness.</p>
+  <div id="ex-banner" class="ex-banner" role="status" hidden>
+    <span>👀 <b>This is just an EXAMPLE.</b> You can't change it or copy it. Build your own ship for Padlet.</span>
+    <button type="button" class="btn btn-primary" id="btn-exit-ex">⚓ Back to My Ship</button>
+  </div>
+  <div class="builder">
+    <form id="mform" class="panel" autocomplete="off" novalidate>
+      <div class="field">
+        <label for="m-captain">Your Captain Name</label>
+        <input id="m-captain" class="input" maxlength="48" placeholder="e.g., Captain Inés Ruiz">
+      </div>
+      <div class="field">
+        <span class="lbl">Your Group</span>
+        <div class="choices" id="m-groups">
+          <label class="choice sync"><input type="radio" name="mgroup" id="m-group-sync" value="sync">🔵 Sync (Blue post)</label>
+          <label class="choice async"><input type="radio" name="mgroup" id="m-group-async" value="async">🟢 Async (Green post)</label>
+        </div>
+      </div>
+      <div class="field"><label for="m-origin">Where Is Your Ship From?</label><select id="m-origin" class="select"></select></div>
+      <div class="field"><label for="m-dest">Where Are You Sailing?</label><select id="m-dest" class="select"></select></div>
+      <div class="field">
+        <span class="lbl">Why Are You Sailing? (pick any)</span>
+        <div class="choices" id="m-mots"></div>
+      </div>
+      <div class="field">
+        <span class="lbl">What's on Your Ship? (pick 4 goods)</span>
+        <div class="slots" id="m-slots"></div>
+      </div>
+      <div class="field">
+        <label for="m-pitch">Talk the Port Into Letting You In (2–3 sentences)</label>
+        <textarea id="m-pitch" class="textarea" maxlength="600" placeholder="Tell the port why they should let you in and trade with you."></textarea>
+      </div>
+    </form>
+
+    <aside class="preview-col" aria-label="Manifest preview">
+      <article id="manifest-card" class="paper">
+        <div class="doc-top"><span id="pv-group" class="gbadge">Group not chosen</span></div>
+        <h2 class="doc-title">Shipping Manifest</h2>
+        <dl class="ledger">
+          <div><dt>Captain</dt><dd id="pv-captain"></dd></div>
+          <div><dt>Flag</dt><dd id="pv-origin"></dd></div>
+          <div><dt>Ship</dt><dd id="pv-vessel"></dd></div>
+          <div><dt>Sailing To</dt><dd id="pv-dest"></dd></div>
+          <div><dt>Why</dt><dd id="pv-mot"></dd></div>
+        </dl>
+        <div class="hold"><div class="hold-h">Contents of the Hold</div><ol class="hold-list" id="pv-cargo"></ol></div>
+        <blockquote class="pitch" id="pv-pitch"></blockquote>
+        <div class="doc-foot">
+          <div class="sig"><span class="sig-name" id="pv-sig"></span><span class="sig-line">Captain's signature</span></div>
+          <div class="seal" id="pv-seal" aria-hidden="true">✠</div>
+        </div>
+      </article>
+      <div class="actions">
+        <button type="button" class="btn btn-primary btn-big" id="btn-copy-m">📋 Copy Manifest for Padlet</button>
+        <div class="row">
+          <button type="button" class="btn btn-ghost" id="btn-print-m" hidden>🖨️ Print Card</button>
+          <button type="button" class="btn btn-ghost" id="btn-shot-m">📸 Screenshot</button>
+          <button type="button" class="btn btn-wax" id="btn-example">🎲 Example Ship</button>
+          <button type="button" class="btn btn-ghost" id="btn-clear-m">🧹 Clear</button>
+        </div>
+      </div>
+    </aside>
+  </div>
+</section>
+
+<!-- ============ TAB 2 ============ -->
+<section id="tab-inspect" role="tabpanel" aria-labelledby="t-inspect" hidden>
+  <p class="intro"><b>Inspector:</b> Pick a classmate's post from the <b>other</b> group. Check every item against the port's laws, pick a stamp, and paste your report in their comments.</p>
+  <div id="ex-banner-r" class="ex-banner" role="status" hidden>
+    <span>👀 <b>This is just an EXAMPLE report.</b> You can't change it or copy it. Write your own report for Padlet.</span>
+    <button type="button" class="btn btn-primary" id="btn-exit-ex-r">📜 Back to My Report</button>
+  </div>
+  <div class="builder">
+    <form id="rform" class="panel" autocomplete="off" novalidate>
+      <div class="field">
+        <label for="i-name">Your Name</label>
+        <input id="i-name" class="input" maxlength="48" placeholder="e.g., Inspector M. Okafor">
+      </div>
+      <div class="field">
+        <span class="lbl">Your Group</span>
+        <div class="choices" id="i-groups">
+          <label class="choice sync"><input type="radio" name="igroup" id="i-group-sync" value="sync">🔵 Sync (I check 🟢 Green posts)</label>
+          <label class="choice async"><input type="radio" name="igroup" id="i-group-async" value="async">🟢 Async (I check 🔵 Blue posts)</label>
+        </div>
+      </div>
+      <div class="field">
+        <label for="i-ship">Whose Ship Are You Checking?</label>
+        <input id="i-ship" class="input" maxlength="80" placeholder="e.g., Capitán Diego Ortega, Spanish Galleon">
+      </div>
+      <div class="field">
+        <label for="i-port">Where Did Their Ship Sail?</label>
+        <select id="i-port" class="select"></select>
+      </div>
+      <div id="i-laws" class="lawbox" hidden></div>
+      <div class="field">
+        <span class="lbl">Pick Your Stamp</span>
+        <div class="verdicts" id="i-verdicts">
+          <button type="button" class="vbtn approved" data-v="approved" aria-pressed="false">✅ Approved (all good)</button>
+          <button type="button" class="vbtn restricted" data-v="restricted" aria-pressed="false">⚠️ Restricted (strict rules)</button>
+          <button type="button" class="vbtn banished" data-v="banished" aria-pressed="false">🚫 Banished (kicked out)</button>
+          <button type="button" class="vbtn quarantine" data-v="quarantine" aria-pressed="false">☣️ Quarantined (sickness)</button>
+        </div>
+        <div class="stamp-help">
+          <b>Which stamp should I pick? Check every item, then:</b>
+          <span>🚫 <b>Banished:</b> one or more items are illegal or ahistorical (from the wrong time or place).</span>
+          <span>☣️ <b>Quarantined:</b> an item is a sickness, like smallpox.</span>
+          <span>⚠️ <b>Restricted:</b> all the items are fine, but the port has strict rules (like China's night curfew or Japan's Dutch-only rule).</span>
+          <span>✅ <b>Approved:</b> all the items are fine and the port welcomes the ship.</span>
+          <span>More than one fits? Pick the most serious one and explain everything in your findings.</span>
+        </div>
+      </div>
+      <div class="field">
+        <label for="i-catch">Your findings: which items (if any) break the rules? Why? If all items are fine, say why.</label>
+        <input id="i-catch" class="input" maxlength="300" placeholder="e.g., Potatoes, because they come FROM the Americas…">
+      </div>
+      <div class="field">
+        <label for="i-impact">What really happened when this group came here? (2–3 sentences)</label>
+        <textarea id="i-impact" class="textarea" maxlength="700" placeholder="Use your Unit 4 notes. Example: Spain took over the Aztec Empire in 1521."></textarea>
+      </div>
+    </form>
+
+    <aside class="preview-col" aria-label="Report preview">
+      <article id="report-card" class="paper">
+        <div class="doc-top"><span id="rv-group" class="gbadge">Group not chosen</span></div>
+        <h2 class="doc-title">Customs Report</h2>
+        <div class="stamp-zone"><div id="rv-stamp" class="stamp pending">Awaiting Stamp</div></div>
+        <dl class="ledger">
+          <div><dt>Inspector</dt><dd id="rv-name"></dd></div>
+          <div><dt>Ship</dt><dd id="rv-ship"></dd></div>
+          <div><dt>Port</dt><dd id="rv-port"></dd></div>
+        </dl>
+        <div class="rsec"><h3>Inspector's Findings</h3><p id="rv-catch"></p></div>
+        <div class="rsec"><h3>What Really Happened</h3><p id="rv-impact"></p></div>
+        <div class="doc-foot">
+          <div class="sig"><span class="sig-name" id="rv-sig"></span><span class="sig-line">Inspector's signature</span></div>
+          <div class="seal navy" aria-hidden="true">PA</div>
+        </div>
+      </article>
+      <div class="actions">
+        <button type="button" class="btn btn-primary btn-big" id="btn-copy-r">📋 Copy Report for Padlet Comment</button>
+        <div class="row"><button type="button" class="btn btn-wax" id="btn-example-r">🎲 Example Report</button><button type="button" class="btn btn-ghost" id="btn-clear-r">🧹 Clear</button></div>
+      </div>
+    </aside>
+  </div>
+</section>
+
+<!-- ============ TAB 3 ============ -->
+<section id="tab-lawbook" role="tabpanel" aria-labelledby="t-lawbook" hidden>
+  <input id="lb-search" class="input search" type="search" placeholder="🔎 Search for a word (like silver, Japan, or potatoes)" aria-label="Search the Lawbook">
+  <div class="lb-grid" id="lb-grid">
+    <article class="law" data-k="china">
+      <h3>🐉 Ming China <span>(1368–1644)</span></h3>
+      <ul>
+        <li>China was the richest country in the world. After Zheng He's voyages (1405–1433), China closed itself off. This is called <b>isolationism</b>.</li>
+        <li>Visitors could only trade in <b>Macau</b> (Portugal, 1557) or <b>Canton</b> (Britain, 1600s).</li>
+      </ul>
+      <div class="lookout">
+        <h4>🔍 Look out for</h4>
+        <ul>
+          <li>⚠️ Any European ship. It must stay in Macau or Canton and be back on board by night.</li>
+          <li>🚫 Gold as payment. China only took <b>silver</b>.</li>
+          <li>🚫 Opium. The big opium trade didn't start until the 1700s.</li>
+          <li>🚫 A letter refusing to <b>kowtow</b> (bow low). That didn't happen until 1793.</li>
+          <li>🚫 Zheng He's treasure fleet after 1433. Those voyages had stopped.</li>
+        </ul>
+      </div>
+    </article>
+    <article class="law" data-k="japan">
+      <h3>⛩️ Japan <span>(1543–1850s)</span></h3>
+      <ul>
+        <li>Portugal arrived in 1543 with guns and Christianity. Jesuit missionaries converted over 100,000 people.</li>
+        <li>Starting in 1633, Japan closed its borders to almost everyone.</li>
+      </ul>
+      <div class="lookout">
+        <h4>🔍 Look out for</h4>
+        <ul>
+          <li>🚫 Jesuits, rosaries, or Christian books. Christianity was illegal.</li>
+          <li>🚫 Portuguese, Spanish, or English ships in 1635. Only the Dutch could trade.</li>
+          <li>⚠️ Dutch ships. They are allowed, but only in Nagasaki and only if they don't spread their religion.</li>
+          <li>🚫 Japanese passengers sailing to other countries. Leaving Japan was against the law.</li>
+        </ul>
+      </div>
+    </article>
+    <article class="law" data-k="india">
+      <h3>🕌 Mughal India <span>(1498–1858)</span></h3>
+      <ul>
+        <li>Babur started the Mughal Empire in 1526. His grandson Akbar let people choose their religion and made the empire rich.</li>
+        <li>The British East India Company came in 1600. Britain slowly took over and ruled India by 1858.</li>
+      </ul>
+      <div class="lookout">
+        <h4>🔍 Look out for</h4>
+        <ul>
+          <li>✅ Silver, horses, and goods for trade. The Mughals welcomed traders who asked permission.</li>
+          <li>🚫 A British East India Company ship before 1600. The company didn't exist yet.</li>
+          <li>🚫 Chili peppers, tomatoes, or corn before 1492. They come from the Americas.</li>
+          <li>✅ Chili peppers after 1500. The Portuguese really did bring them to India.</li>
+        </ul>
+      </div>
+    </article>
+    <article class="law" data-k="spice">
+      <h3>🌿 Spice Islands <span>(Southeast Asia)</span></h3>
+      <ul>
+        <li>The only place in the world with nutmeg and cloves.</li>
+        <li>Portugal arrived first (1512). Then the <b>Dutch East India Company (VOC, 1602)</b> took over with its own army and forts. This is called a <b>sphere of influence</b>.</li>
+      </ul>
+      <div class="lookout">
+        <h4>🔍 Look out for</h4>
+        <ul>
+          <li>🚫 A ship bringing spices <i>to</i> the Spice Islands. That's backwards!</li>
+          <li>🚫 A Dutch VOC ship before 1602. The company didn't exist yet.</li>
+          <li>⚠️ English or Portuguese ships after 1602. The Dutch attacked their rivals.</li>
+        </ul>
+      </div>
+    </article>
+    <article class="law" data-k="africa">
+      <h3>🌍 West Africa <span>(1444–1600s)</span></h3>
+      <ul>
+        <li>At first, Europeans traded guns and alcohol for African gold, ivory, and jewels.</li>
+        <li>Portugal started the slave trade in 1444. Europeans used <b>chattel slavery</b>: people were treated as property for life because of their race. About 12.5 million Africans were taken.</li>
+      </ul>
+      <div class="lookout">
+        <h4>🔍 Look out for</h4>
+        <ul>
+          <li>✅ Guns, alcohol, and cloth traded for gold and ivory. This really happened.</li>
+          <li>🚫 Tobacco, corn, or peanuts before 1492. They come from the Americas.</li>
+          <li>🚫 A Dutch or British East India Company ship in the 1480s. Those companies started around 1600.</li>
+        </ul>
+      </div>
+    </article>
+    <article class="law" data-k="americas">
+      <h3>🌎 The Americas <span>(1492–1607)</span></h3>
+      <ul>
+        <li>Columbus landed in 1492. <b>Cortés</b> beat the Aztecs (1521) and <b>Pizarro</b> beat the Incas (1533) with guns, horses, and <b>smallpox</b>.</li>
+        <li>Disease killed about 9 out of 10 Native people. Spain forced survivors to work under the <b>Encomienda System (1502)</b>.</li>
+      </ul>
+      <div class="lookout">
+        <h4>🔍 Look out for</h4>
+        <ul>
+          <li>☣️ Smallpox, measles, or influenza. These sicknesses were new to the Americas.</li>
+          <li>🚫 Potatoes, tomatoes, corn, or cocoa coming FROM Europe. They already grew here!</li>
+          <li>🚫 Coffee (about 1720) or honeybees (1622). Too early for the 1500s.</li>
+          <li>🚫 An encomienda contract before 1502, or a Treaty of Tordesillas map before 1494.</li>
+          <li>✅ Horses, cattle, pigs, wheat, and sugarcane after 1493. These really came.</li>
+        </ul>
+      </div>
+    </article>
+    <article class="law wide" data-k="columbian exchange">
+      <h3>🔄 Columbian Exchange</h3>
+      <p class="watch top">If a ship from Europe brings tomatoes or potatoes <b>to</b> the Americas in 1492, that's ahistorical. Those foods already grew there! The years show when each item crossed the ocean.</p>
+      <div class="cx-cols">
+        <div><h4>🌎 From the Americas → to the rest of the world</h4><ul class="cx-list" id="cx-nw"></ul></div>
+        <div><h4>🌍 From Europe, Africa &amp; Asia → to the Americas</h4><ul class="cx-list" id="cx-ow"></ul></div>
+      </div>
+    </article>
+    <article class="law wide" data-k="too early ahistorical">
+      <h3>⏳ Too Early! Ahistorical Items</h3>
+      <p class="watch top">Ahistorical means it doesn't fit the time or place. If a ship carries one of these before its date, catch it!</p>
+      <ul>
+        <li>Treaty of Tordesillas: <b>1494</b> · Encomienda: <b>1502</b> · Jesuits start: <b>1540</b></li>
+        <li>Honeybees reach the Americas: <b>1622</b> · Coffee reaches the Americas: <b>about 1720</b></li>
+        <li>Letter refusing to kowtow: <b>1793</b> · Big opium trade: <b>1700s–1800s</b></li>
+      </ul>
+    </article>
+  </div>
+  <div id="lb-empty" class="empty-note" hidden>No matches. Try a shorter word.</div>
+</section>
+</main>
+</div>
+
+<div id="toast" class="toast" role="status" aria-live="polite"></div>
+<div id="modal" class="modal" hidden>
+  <div class="modal-box" role="dialog" aria-modal="true" aria-labelledby="modal-h">
+    <h3 id="modal-h">Copy this text</h3>
+    <p style="margin:0">Press Ctrl+C (or ⌘+C), then paste into Padlet.</p>
+    <textarea id="modal-text" class="textarea" readonly></textarea>
+    <button type="button" class="btn btn-primary" id="modal-close">Done</button>
+  </div>
+</div>
+<div id="shot" class="shot" hidden>
+  <div class="shot-inner">
+    <div class="shot-bar"><span>📸 Screenshot this card, then upload it to Padlet.</span><button type="button" class="btn btn-ghost" id="shot-close">Close</button></div>
+    <div id="shot-slot"></div>
+  </div>
+</div>
+
+<script>
+(function(){
+'use strict';
+const $=s=>document.querySelector(s), $$=s=>Array.from(document.querySelectorAll(s));
+const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const store={get(k){try{const v=localStorage.getItem(k);return v?JSON.parse(v):null}catch(e){return null}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
+const ROMAN=['I','II','III','IV'];
+
+/* ---------- DATA ---------- */
+const ORIGINS=[
+ {id:'poly',flag:'🌺',n:'Polynesians / Oceania',yrs:'1500 BCE – 1350 CE',seal:'✦',vessel:'canoe'},
+ {id:'ming',flag:'🐉',n:"Ming China (Zheng He's Fleet)",yrs:'1405–1433',seal:'明',vessel:'junk'},
+ {id:'port',flag:'🛡️',n:'Kingdom of Portugal',yrs:'1480s–1550s',seal:'P',vessel:'caravel'},
+ {id:'spain',flag:'🏰',n:'Crown of Spain / Conquistadors',yrs:'1492–1535',seal:'E',vessel:'galleon'},
+ {id:'voc',flag:'🦁',n:'Dutch East India Company (VOC)',yrs:'1602',seal:'VOC',vessel:'merchant'},
+ {id:'beic',flag:'🌹',n:'British East India Company',yrs:'1600s',seal:'EIC',vessel:'merchant'}
+];
+const VESSELS=[
+ {id:'canoe',n:'Outrigger Canoe + Star/Wave Navigation'},
+ {id:'junk',n:'Treasure Fleet Junk + Magnetic Compass'},
+ {id:'caravel',n:'Portuguese Caravel + Astrolabe & Cannons'},
+ {id:'galleon',n:'Spanish Galleon + Steel Weapons & Horses'},
+ {id:'merchant',n:'East India Merchantman + Private Army'}
+];
+const PORTS=[
+ {id:'macau',n:'Macau / Canton, Ming China',yrs:'1557 / 1600s',laws:['Visitors can only stay in Macau or Canton','Be back on your ship by night','China only takes silver, not gold','Visitors must bow low (kowtow)'],past:['China kept Europeans at the edge of the country. They could trade, but they could never take over.','Europeans paid with silver mined in the Americas. China sold them silk, porcelain, and later tea.']},
+ {id:'nagasaki',n:'Nagasaki, Edo Japan',yrs:'1635',laws:['Christianity is against the law','Only Dutch ships may trade','Ships can only stop at Nagasaki','Japanese people may not leave Japan'],past:['Japan kicked out the Portuguese in 1639 and punished Japanese Christians.','Japan stayed closed to almost everyone for about 200 years, until the 1850s.']},
+ {id:'calicut',n:'Calicut / Agra, Mughal India',yrs:'1560',laws:['Europeans must ask the Mughal ruler before trading','Emperor Akbar lets people choose their religion','The British East India Company shows up in 1600'],past:['The Mughal Empire was strong and rich, so Europeans had to ask before they could trade.','Over time the British East India Company grew more powerful. After the 1857 Rebellion, Britain took over India (1858).']},
+ {id:'africa',n:'West African Coast / Congo River',yrs:'1480s–1600s',laws:['African kings control the coast','Europeans trade guns and alcohol for gold and ivory','The slave trade started in 1444 and grew fast'],past:['European trade turned into the Atlantic slave trade. About 12.5 million Africans were taken across the ocean.','Wars to capture people and the loss of workers made many African kingdoms weaker.']},
+ {id:'tenoch',n:'Tenochtitlan (Aztec 1519) or Inca (1532)',yrs:'1519 / 1532',laws:['No horses, cows, or Old World sicknesses were here before Europeans','Corn, potatoes, tomatoes, and cocoa already grow here','A ship carrying smallpox must be quarantined'],past:['Cortés beat the Aztecs in 1521, and Pizarro beat the Incas in 1533. They had guns, horses, and help from other Native groups.','Smallpox killed about 9 out of 10 Native people. Spain forced the survivors to work under the encomienda system.']},
+ {id:'hisp',n:'San Salvador / Hispaniola',yrs:'1492–1510',laws:['The Taíno people had never seen horses, cows, or wheat','American crops already grow here','Farm animals and sugarcane first came in 1493'],past:['Columbus came back in 1493 with horses, farm animals, sugarcane, and wheat.','Spain forced the Taíno to dig for gold. War, hard work, and sickness almost wiped them out.']},
+ {id:'spice',n:'The Spice Islands, Southeast Asia',yrs:'1602',laws:['The only place in the world with nutmeg and cloves','The Dutch (VOC) want to control all the trade','Dutch forts and armies attack other ships'],past:['The Dutch pushed out Portugal and England using forts and private armies.','In 1621 the Dutch took the Banda Islands by force. They killed or enslaved most of the people to control nutmeg.']}
+];
+const MOTS=[{id:'god',n:'✝️ God'},{id:'gold',n:'💰 Gold'},{id:'glory',n:'👑 Glory'},{id:'myth',n:'🗝️ Rumors & Myths'}];
+const CATS={trade:'Trade Goods',ow:'Old World → New World',nw:'New World → Old World',people:'People & Documents'};
+const ITEMS=[
+ ['silver','trade','🪙','Silver Bullion / Coins'],['gold','trade','💰','Gold Coins (Çeitils)'],['silk','trade','🏺','Chinese Silk & Porcelain'],['spices','trade','🧂','Spices (Cinnamon, Nutmeg, Pepper)'],['guns','trade','⚔️','Guns & Alcohol'],['ivory','trade','💎','Ivory & Jewels'],['opium','trade','⚗️','Opium'],
+ ['horses','ow','🐎','Horses'],['livestock','ow','🐖','Cattle / Pigs / Sheep'],['sugar','ow','🎋','Sugarcane'],['coffee','ow','☕','Coffee Beans'],['wheat','ow','🌾','Wheat / Grains'],['citrus','ow','🍋','Citrus Fruits / Bananas'],['bees','ow','🐝','Honeybees'],['disease','ow','🦠','Smallpox / Measles / Influenza'],
+ ['potato','nw','🥔','Potatoes'],['tomato','nw','🍅','Tomatoes'],['maize','nw','🌽','Corn (Maize)'],['cocoa','nw','🍫','Cocoa (Chocolate)'],['tobacco','nw','🍂','Tobacco'],['turkey','nw','🦃','Turkeys'],['peanut','nw','🥜','Peanuts'],['squash','nw','🎃','Pumpkins / Squash'],['vanilla','nw','🌼','Vanilla'],['chili','nw','🌶️','Chili Peppers'],
+ ['jesuits','people','✝️','Jesuit Missionaries'],['encomienda','people','📜','Encomienda Labor Contract'],['tordesillas','people','🗺️','Treaty of Tordesillas Map (1494)'],['kowtow','people','✉️','Kowtow Refusal Letter'],['xtexts','people','📿','Christian Texts / Rosaries']
+].map(([id,cat,e,n])=>({id,cat,e,n}));
+const I=Object.fromEntries(ITEMS.map(x=>[x.id,x])),O=Object.fromEntries(ORIGINS.map(x=>[x.id,x])),P=Object.fromEntries(PORTS.map(x=>[x.id,x])),V=Object.fromEntries(VESSELS.map(x=>[x.id,x]));
+
+/* ---------- POPULATE ---------- */
+const opt=(ph,list)=>`<option value="">${ph}</option>`+list;
+$('#m-origin').innerHTML=opt('Choose a flag…',ORIGINS.map(o=>`<option value="${o.id}">${o.flag} ${esc(o.n)} (${o.yrs})</option>`).join(''));
+const portOpts=PORTS.map(p=>`<option value="${p.id}">${esc(p.n)} (${p.yrs})</option>`).join('');
+$('#m-dest').innerHTML=opt('Choose a port…',portOpts);
+$('#i-port').innerHTML=opt('Choose the port…',portOpts);
+$('#m-mots').innerHTML=MOTS.map(m=>`<label class="choice mot"><input type="checkbox" id="m-mot-${m.id}">${m.n}</label>`).join('');
+const cargoOpts=Object.keys(CATS).map(k=>`<optgroup label="${CATS[k]}">`+ITEMS.filter(i=>i.cat===k).map(i=>`<option value="${i.id}">${i.e} ${esc(i.n)}</option>`).join('')+'</optgroup>').join('');
+$('#m-slots').innerHTML=[0,1,2,3].map(i=>`<span class="numeral">${ROMAN[i]}</span><select id="m-c${i+1}" class="select" aria-label="Cargo slot ${ROMAN[i]}">${opt('Choose cargo…',cargoOpts)}</select>`).join('');
+
+/* ---------- SHARED ---------- */
+const ph=t=>`<span class="ph">${esc(t)}</span>`;
+function badge(el,g,insp){el.className='gbadge'+(g?' '+g:'');el.textContent=!g?'Group not chosen':insp?(g==='sync'?'🔵 Sync → 🟢 Async post':'🟢 Async → 🔵 Sync post'):(g==='sync'?'🔵 Sync · Blue post':'🟢 Async · Green post')}
+function markOn(){$$('.choice').forEach(l=>l.classList.toggle('on',l.querySelector('input').checked))}
+let tt;function toast(msg,err){const t=$('#toast');t.textContent=msg;t.classList.toggle('err',!!err);t.classList.add('show');clearTimeout(tt);tt=setTimeout(()=>t.classList.remove('show'),err?4000:2800)}
+function legacyCopy(text){try{const ta=document.createElement('textarea');ta.value=text;ta.style.position='fixed';ta.style.opacity='0';document.body.appendChild(ta);ta.select();const ok=document.execCommand('copy');ta.remove();return ok}catch(e){return false}}
+function copyText(text,msg){const fb=()=>{if(legacyCopy(text))toast(msg);else{$('#modal-text').value=text;$('#modal').hidden=false;setTimeout(()=>$('#modal-text').select(),30)}};
+  if(navigator.clipboard&&navigator.clipboard.writeText)navigator.clipboard.writeText(text).then(()=>toast(msg),fb);else fb()}
+$('#modal-close').onclick=()=>{$('#modal').hidden=true};
+function missing(list){$$('.invalid').forEach(e=>e.classList.remove('invalid'));list.forEach(([,s])=>{const e=$(s);if(e)e.classList.add('invalid')});const f=$(list[0][1]);if(f)f.scrollIntoView({behavior:'smooth',block:'center'});toast('Missing: '+list.map(x=>x[0]).join(', '),true)}
+$('#shot-close').onclick=()=>{$('#shot').hidden=true};
+document.addEventListener('keydown',e=>{if(e.key==='Escape'){$('#shot').hidden=true;$('#modal').hidden=true}});
+function shot(card){const c=card.cloneNode(true);c.removeAttribute('id');c.querySelectorAll('[id]').forEach(e=>e.removeAttribute('id'));$('#shot-slot').replaceChildren(c);$('#shot').hidden=false}
+const L='━━━━━━━━━━━━━━━━━━';
+
+/* ---------- TAB 1 ---------- */
+function readM(){const g=document.querySelector('input[name="mgroup"]:checked');return{captain:$('#m-captain').value.trim(),group:g?g.value:'',origin:$('#m-origin').value,vessel:(O[$('#m-origin').value]||{}).vessel||'',dest:$('#m-dest').value,mot:MOTS.filter(m=>$('#m-mot-'+m.id).checked).map(m=>m.id),cargo:[1,2,3,4].map(i=>$('#m-c'+i).value),pitch:$('#m-pitch').value.trim()}}
+function writeM(m){$('#m-captain').value=m.captain||'';['sync','async'].forEach(g=>$('#m-group-'+g).checked=m.group===g);$('#m-origin').value=m.origin||'';$('#m-dest').value=m.dest||'';MOTS.forEach(x=>$('#m-mot-'+x.id).checked=(m.mot||[]).includes(x.id));[1,2,3,4].forEach(i=>$('#m-c'+i).value=(m.cargo||[])[i-1]||'');$('#m-pitch').value=m.pitch||''}
+const motTxt=m=>m.mot.map(id=>MOTS.find(x=>x.id===id).n).join(' · ');
+function renderM(){
+  const m=readM();markOn();const o=O[m.origin],p=P[m.dest],v=V[m.vessel];
+  badge($('#pv-group'),m.group);
+  $('#pv-captain').innerHTML=m.captain?esc(m.captain):ph('Your name');
+  $('#pv-origin').innerHTML=o?`${o.flag} ${esc(o.n)} <span class="ph">(${o.yrs})</span>`:ph('—');
+  $('#pv-vessel').innerHTML=v?esc(v.n):ph('—');
+  $('#pv-dest').innerHTML=p?`${esc(p.n)} <span class="ph">(${p.yrs})</span>`:ph('—');
+  $('#pv-mot').innerHTML=m.mot.length?esc(motTxt(m)):ph('—');
+  $('#pv-cargo').innerHTML=m.cargo.map((id,i)=>`<li><span class="hold-num">${ROMAN[i]}</span><span>${I[id]?I[id].e+' '+esc(I[id].n):ph('empty')}</span></li>`).join('');
+  $('#pv-pitch').innerHTML=m.pitch?'“'+esc(m.pitch)+'”':ph('Your pitch will appear here.');
+  $('#pv-sig').textContent=m.captain;$('#pv-seal').textContent=o?o.seal:'✠';
+  if(!exMode)store.set('pa-m2',m);
+}
+$('#mform').addEventListener('input',e=>{e.target.classList.remove('invalid');renderM()});
+$('#mform').addEventListener('change',e=>{$$('#m-groups,#m-mots').forEach(x=>x.classList.remove('invalid'));renderM()});
+$('#btn-copy-m').onclick=()=>{
+  if(exMode)return toast('🔒 You can\'t copy the example. Click "Back to My Ship" to build your own.',true);
+  const m=readM(),miss=[];
+  if(!m.captain)miss.push(['name','#m-captain']);if(!m.group)miss.push(['group','#m-groups']);if(!m.origin)miss.push(['flag','#m-origin']);if(!m.dest)miss.push(['port','#m-dest']);if(!m.mot.length)miss.push(['motivation','#m-mots']);
+  m.cargo.forEach((c,i)=>{if(!c)miss.push(['cargo '+ROMAN[i],'#m-c'+(i+1)])});if(!m.pitch)miss.push(['pitch','#m-pitch']);
+  if(miss.length)return missing(miss);
+  const o=O[m.origin],p=P[m.dest];
+  const text=['⚓ OFFICIAL SHIPPING MANIFEST ⚓',L,`🧑‍✈️ Captain: ${m.captain}`,m.group==='sync'?'🔵 Sync Learner (Blue post)':'🟢 Async Learner (Green post)',`${o.flag} Flag: ${o.n} (${o.yrs})`,`⛵ Ship: ${V[m.vessel].n}`,`🗺️ Bound For: ${p.n} (${p.yrs})`,`🎯 Why We Sailed: ${motTxt(m)}`,L,'📦 CARGO HOLD',...m.cargo.map((id,i)=>`${ROMAN[i]}. ${I[id].e} ${I[id].n}`),L,`🗣️ “${m.pitch}”`,L,'🔍 Inspector: check my cargo against the port laws and pick a stamp!'].join('\n');
+  copyText(text,'✅ Copied! Paste it into your '+(m.group==='sync'?'BLUE':'GREEN')+' Padlet post.');
+};
+if(window.PA_STANDALONE===true){const b=$('#btn-print-m');b.hidden=false;b.onclick=()=>{if(exMode)return;document.body.classList.add('print-manifest');window.print()};window.addEventListener('afterprint',()=>document.body.classList.remove('print-manifest'))}
+$('#btn-shot-m').onclick=()=>{if(!exMode)shot($('#manifest-card'))};
+const EXAMPLES=[
+ {captain:'Capitão Afonso Menezes',group:'sync',origin:'port',dest:'calicut',mot:['gold'],cargo:['silver','horses','chili','ivory'],pitch:'Great Emperor Akbar, we bring silver, strong horses, ivory, and spicy chili peppers from across the sea. We ask your permission to trade in peace.'},
+ {captain:'Capitão João Pereira',group:'async',origin:'port',dest:'macau',mot:['gold'],cargo:['silver','spices','ivory','maize'],pitch:'Officials of the Ming, we bring pure silver, spices, ivory, and a new grain called maize. We will stay in Macau and go back to our ship every night, just like your law says.'},
+ {captain:'Capitán Rodrigo Vela',group:'sync',origin:'spain',dest:'hisp',mot:['god','gold','glory'],cargo:['horses','wheat','tomato','potato'],pitch:'Friends of San Salvador, we sailed from Spain with horses, wheat, and fine foods for your people. Let us land and share our gifts.'},
+ {captain:'Capitán Diego Ortega',group:'async',origin:'spain',dest:'tenoch',mot:['god','gold','glory'],cargo:['horses','guns','livestock','disease'],pitch:'Great Moctezuma, my ship brings horses, steel, and farm animals you have never seen. Please let us dock and trade as friends.'}
+];
+let ex=-1,exMode=false;
+function setExample(on){
+  exMode=on;$('#manifest-card').classList.toggle('is-example',on);$('#ex-banner').hidden=!on;
+  $$('#mform input,#mform select,#mform textarea').forEach(e=>{e.disabled=on});
+  ['#btn-copy-m','#btn-shot-m','#btn-print-m','#btn-clear-m'].forEach(s=>{$(s).disabled=on});
+  $('#btn-copy-m').textContent=on?'🔒 Copy is turned off for examples':'📋 Copy Manifest for Padlet';
+  $('#btn-example').textContent=on?'🎲 Next Example':'🎲 Example Ship';
+}
+$('#btn-example').onclick=()=>{if(!exMode)store.set('pa-m2',readM());ex=(ex+1)%EXAMPLES.length;setExample(true);writeM(EXAMPLES[ex]);renderM();window.scrollTo({top:0,behavior:'smooth'});toast(`👀 Example ship ${ex+1} of ${EXAMPLES.length}. Which stamp would you give it?`)};
+$('#btn-exit-ex').onclick=()=>{setExample(false);writeM(store.get('pa-m2')||{});renderM();toast('⚓ Back to your own ship.')};
+/* Clear buttons: tap once to arm, tap again within 3 seconds to clear (browser pop-up confirms are blocked) */
+function clearBtn(btn,fn){const label=btn.textContent;let armed=false,t;btn.onclick=()=>{if(!armed){armed=true;btn.textContent='⚠️ Tap again to clear';t=setTimeout(()=>{armed=false;btn.textContent=label},3000);return}clearTimeout(t);armed=false;btn.textContent=label;fn()}}
+clearBtn($('#btn-clear-m'),()=>{if(exMode)return;writeM({});$$('.invalid').forEach(e=>e.classList.remove('invalid'));renderM();toast('🧹 All fields cleared.')});
+clearBtn($('#btn-clear-r'),()=>{if(exModeR)return;writeR({});$$('.invalid').forEach(e=>e.classList.remove('invalid'));renderR();toast('🧹 All fields cleared.')});
+
+/* ---------- TAB 2 ---------- */
+const VERD={approved:['✅','APPROVED FOR TRADE','Approved'],restricted:['⚠️','RESTRICTED / CURFEW ENTRY','Restricted'],banished:['🚫','BANISHED (KICKED OUT)','Banished'],quarantine:['☣️','QUARANTINED','Quarantined']};
+let verdict='',lastV='';
+function readR(){const g=document.querySelector('input[name="igroup"]:checked');return{name:$('#i-name').value.trim(),group:g?g.value:'',ship:$('#i-ship').value.trim(),port:$('#i-port').value,verdict,catch:$('#i-catch').value.trim(),impact:$('#i-impact').value.trim()}}
+function writeR(r){$('#i-name').value=r.name||'';['sync','async'].forEach(g=>$('#i-group-'+g).checked=r.group===g);$('#i-ship').value=r.ship||'';$('#i-port').value=r.port||'';$('#i-catch').value=r.catch||'';$('#i-impact').value=r.impact||'';verdict=r.verdict||''}
+function renderR(){
+  const r=readR();markOn();const p=P[r.port];
+  badge($('#rv-group'),r.group,true);
+  $('#rv-name').innerHTML=r.name?esc(r.name):ph('Your name');
+  $('#rv-ship').innerHTML=r.ship?esc(r.ship):ph('—');
+  $('#rv-port').innerHTML=p?`${esc(p.n)} <span class="ph">(${p.yrs})</span>`:ph('—');
+  $('#rv-catch').innerHTML=r.catch?esc(r.catch):ph('Which items break the rules, and why?');
+  $('#rv-impact').innerHTML=r.impact?esc(r.impact):ph('What really happened?');
+  $('#rv-sig').textContent=r.name;
+  const st=$('#rv-stamp');
+  if(verdict){st.className='stamp '+verdict;st.textContent=VERD[verdict][2];if(verdict!==lastV){void st.offsetWidth;st.classList.add('thunk')}}else{st.className='stamp pending';st.textContent='Awaiting Stamp'}
+  lastV=verdict;
+  $$('.vbtn').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.v===verdict)));
+  const box=$('#i-laws');box.hidden=!p;if(p)box.innerHTML=`<b>📖 Port laws: ${esc(p.n)}</b><ul>${p.laws.map(l=>`<li>${esc(l)}</li>`).join('')}</ul><b>📜 What really happened here</b><ul>${p.past.map(l=>`<li>${esc(l)}</li>`).join('')}</ul>`;
+  if(!exModeR)store.set('pa-r2',r);
+}
+$('#rform').addEventListener('input',e=>{e.target.classList.remove('invalid');renderR()});
+$('#rform').addEventListener('change',()=>{$('#i-groups').classList.remove('invalid');renderR()});
+$$('.vbtn').forEach(b=>b.onclick=()=>{verdict=b.dataset.v;$('#i-verdicts').classList.remove('invalid');renderR()});
+$('#btn-copy-r').onclick=()=>{
+  if(exModeR)return toast('🔒 You can\'t copy the example. Click "Back to My Report" to write your own.',true);
+  const r=readR(),miss=[];
+  if(!r.name)miss.push(['name','#i-name']);if(!r.group)miss.push(['group','#i-groups']);if(!r.ship)miss.push(['ship','#i-ship']);if(!r.port)miss.push(['port','#i-port']);if(!r.verdict)miss.push(['stamp','#i-verdicts']);if(!r.catch)miss.push(['findings','#i-catch']);if(!r.impact)miss.push(['what happened','#i-impact']);
+  if(miss.length)return missing(miss);
+  const p=P[r.port],v=VERD[r.verdict];
+  const text=['📜 PORT AUTHORITY CUSTOMS REPORT 📜',L,`🕵️ Inspector: ${r.name}`,r.group==='sync'?'🔵 Sync Inspector reviewing a 🟢 Green Async Post':'🟢 Async Inspector reviewing a 🔵 Blue Sync Post',`🚢 Ship: ${r.ship}`,`⚓ Port: ${p.n} (${p.yrs})`,L,`${v[0]} VERDICT: ${v[1]}`,L,`🔍 Findings: ${r.catch}`,'',`📖 What Really Happened: ${r.impact}`].join('\n');
+  copyText(text,'✅ Copied! Paste it into your classmate’s Padlet comments.');
+};
+
+/* ---------- TAB 2 EXAMPLES (locked, like Tab 1) ---------- */
+const EXAMPLES_R=[
+ {name:'Inspector Ana Torres',group:'async',ship:'Capitão Afonso Menezes, Portuguese Caravel',port:'calicut',verdict:'approved',catch:'All four items are fine. Silver, horses, and ivory were real trade goods. Chili peppers came from the Americas after 1492, and the Portuguese really did bring them to India. The Mughal Empire welcomed traders who asked permission.',impact:'The Mughal Empire was strong and rich, so the Portuguese had to ask before they could trade. Emperor Akbar welcomed traders and let people choose their religion. Later the British East India Company grew powerful, and Britain took over India in 1858.'},
+ {name:'Inspector Leo Park',group:'sync',ship:'Capitão João Pereira, Portuguese Caravel',port:'macau',verdict:'restricted',catch:'None of the items break the law. Silver is exactly what China wants, and maize really did reach China by the 1550s. But Macau has strict rules: foreigners must stay in Macau and be back on their ships at night.',impact:'China kept Europeans at the edge of the country, in Macau and Canton. Europeans paid with silver from the Americas to buy silk and porcelain. China stayed in control and never let them take over.'},
+ {name:'Inspector Maya Brooks',group:'async',ship:'Capitán Rodrigo Vela, Spanish Galleon',port:'hisp',verdict:'banished',catch:'Tomatoes (item III) and Potatoes (item IV) are ahistorical. They come FROM the Americas, so a ship from Spain could not be bringing them here. They were already growing in the Americas! Horses and wheat are fine.',impact:'Columbus came back in 1493 with horses, farm animals, sugarcane, and wheat. Spain forced the Taíno to dig for gold. War, hard work, and sickness almost wiped them out.'},
+ {name:'Inspector Sam Rivera',group:'sync',ship:'Capitán Diego Ortega, Spanish Galleon',port:'tenoch',verdict:'quarantine',catch:'Smallpox (item IV). This ship is carrying a sickness. The Aztecs had never had smallpox, so their bodies had no protection. The horses, guns, and farm animals are real for 1519.',impact:'Cortés beat the Aztecs in 1521 with guns, horses, and help from other Native groups. Smallpox killed about 9 out of 10 Native people. Spain then forced the survivors to work under the encomienda system.'}
+];
+let exR=-1,exModeR=false;
+function setExampleR(on){
+  exModeR=on;$('#report-card').classList.toggle('is-example',on);$('#ex-banner-r').hidden=!on;
+  $$('#rform input,#rform select,#rform textarea,#rform .vbtn').forEach(e=>{e.disabled=on});
+  ['#btn-copy-r','#btn-clear-r'].forEach(s=>{$(s).disabled=on});
+  $('#btn-copy-r').textContent=on?'🔒 Copy is turned off for examples':'📋 Copy Report for Padlet Comment';
+  $('#btn-example-r').textContent=on?'🎲 Next Example':'🎲 Example Report';
+}
+$('#btn-example-r').onclick=()=>{if(!exModeR)store.set('pa-r2',readR());exR=(exR+1)%EXAMPLES_R.length;setExampleR(true);writeR(EXAMPLES_R[exR]);renderR();window.scrollTo({top:0,behavior:'smooth'});toast(`👀 Example report ${exR+1} of ${EXAMPLES_R.length}: ${VERD[EXAMPLES_R[exR].verdict][0]} ${VERD[EXAMPLES_R[exR].verdict][2]}`)};
+$('#btn-exit-ex-r').onclick=()=>{setExampleR(false);writeR(store.get('pa-r2')||{});renderR();toast('📜 Back to your own report.')};
+
+/* ---------- TAB 3 ---------- */
+const CX_NW=[['🥔 Potatoes','~1570'],['🍅 Tomatoes','~1540s'],['🌽 Corn (Maize)','1493'],['🍫 Cocoa','~1528'],['🍂 Tobacco','1500s'],['🦃 Turkeys','~1520'],['🥜 Peanuts','1500s'],['🎃 Pumpkins / Squash','1490s'],['🌼 Vanilla','~1520'],['🥑 Avocados','1500s'],['🌶️ Chili Peppers','1493']];
+const CX_OW=[['🐎 Horses','1493'],['🐄 Cattle, 🐖 Pigs, 🐑 Sheep','1493'],['🎋 Sugarcane','1493'],['🌾 Wheat / Grains','1493'],['🍋 Citrus','1493'],['🍌 Bananas','~1516'],['🍇 Grapes, 🧅 Onions','1490s'],['🐝 Honeybees','~1622'],['☕ Coffee','~1720'],['🦠 Smallpox, Measles, Influenza','1493–1520'],['🦟 Malaria, Typhus','1500s']];
+const li=([n,y])=>`<li><span>${n}</span><em>${y}</em></li>`;
+$('#cx-nw').innerHTML=CX_NW.map(li).join('');$('#cx-ow').innerHTML=CX_OW.map(li).join('');
+const laws=$$('#lb-grid .law');laws.forEach(a=>a.dataset.orig=a.innerHTML);
+$('#lb-search').addEventListener('input',()=>{
+  const q=$('#lb-search').value.trim().toLowerCase();let shown=0;
+  const re=q?new RegExp(q.replace(/[.*+?^${}()|[\]\\]/g,'\\$&'),'gi'):null;
+  laws.forEach(a=>{a.innerHTML=a.dataset.orig;const hit=!q||a.textContent.toLowerCase().includes(q)||a.dataset.k.includes(q);a.hidden=!hit;
+    if(hit){shown++;if(q){const w=document.createTreeWalker(a,NodeFilter.SHOW_TEXT);const ns=[];while(w.nextNode())ns.push(w.currentNode);
+      ns.forEach(n=>{if(!n.nodeValue.toLowerCase().includes(q))return;const s=document.createElement('span');s.innerHTML=esc(n.nodeValue).replace(re,m=>`<mark>${m}</mark>`);n.replaceWith(...s.childNodes)})}}});
+  $('#lb-empty').hidden=shown>0;
+});
+
+/* ---------- TABS ---------- */
+const TABS=['manifest','inspect','lawbook'];
+function showTab(id){if(!TABS.includes(id))id='manifest';TABS.forEach(t=>{$('#tab-'+t).hidden=t!==id;$('#t-'+t).setAttribute('aria-selected',String(t===id))});store.set('pa-tab',id);try{history.replaceState(null,'','#'+id)}catch(e){}}
+$$('.tab').forEach(b=>b.onclick=()=>{showTab(b.dataset.tab);window.scrollTo({top:0})});
+const h=location.hash.slice(1);showTab(TABS.includes(h)?h:store.get('pa-tab'));
+
+/* ---------- MASTHEAD COMPASS LINES ---------- */
+function draw(){const cv=$('#rhumb'),r=cv.getBoundingClientRect();if(!r.width)return;const d=Math.min(2,devicePixelRatio||1);cv.width=r.width*d;cv.height=r.height*d;const g=cv.getContext('2d');g.setTransform(d,0,0,d,0,0);
+  g.strokeStyle=getComputedStyle(document.documentElement).getPropertyValue('--brass').trim()||'#b08d57';const cx=r.width*.88,cy=r.height*.5;
+  for(let i=0;i<32;i++){const a=i*Math.PI/16;g.globalAlpha=i%4===0?.35:.12;g.beginPath();g.moveTo(cx,cy);g.lineTo(cx+Math.cos(a)*3000,cy+Math.sin(a)*3000);g.stroke()}g.globalAlpha=1}
+addEventListener('resize',draw);draw();
+
+/* ---------- BOOT ---------- */
+writeM(store.get('pa-m2')||{});renderM();
+writeR(store.get('pa-r2')||{});renderR();
+})();
+</script>
+
+</body>
+</html>
