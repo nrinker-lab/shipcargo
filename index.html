@@ -13,6 +13,7 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Assistant:wght@400;600;700&family=Cinzel:wght@700;900&family=EB+Garamond:ital,wght@0,400;0,500;1,400&display=swap">
 <script src="https://cdn.tailwindcss.com/3.4.17"></script>
 <script>try{tailwind.config={corePlugins:{preflight:false}}}catch(e){}</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <style>
 /* Layout: a customs-house desk. Simple form on the left, the live parchment document on the right. */
 :root{
@@ -287,7 +288,7 @@ mark{background:rgba(176,141,87,.5);color:inherit;border-radius:2px}
         <button type="button" class="btn btn-primary btn-big" id="btn-copy-m">📋 Copy Manifest for Padlet</button>
         <div class="row">
           <button type="button" class="btn btn-ghost" id="btn-print-m" hidden>🖨️ Print Card</button>
-          <button type="button" class="btn btn-ghost" id="btn-shot-m">📸 Screenshot</button>
+          <button type="button" class="btn btn-ghost" id="btn-save-m">💾 Save as Image</button>
           <button type="button" class="btn btn-wax" id="btn-example">🎲 Example Ship</button>
           <button type="button" class="btn btn-ghost" id="btn-clear-m">🧹 Clear</button>
         </div>
@@ -371,7 +372,7 @@ mark{background:rgba(176,141,87,.5);color:inherit;border-radius:2px}
       </article>
       <div class="actions">
         <button type="button" class="btn btn-primary btn-big" id="btn-copy-r">📋 Copy Report for Padlet Comment</button>
-        <div class="row"><button type="button" class="btn btn-wax" id="btn-example-r">🎲 Example Report</button><button type="button" class="btn btn-ghost" id="btn-clear-r">🧹 Clear</button></div>
+        <div class="row"><button type="button" class="btn btn-ghost" id="btn-save-r">💾 Save as Image</button><button type="button" class="btn btn-wax" id="btn-example-r">🎲 Example Report</button><button type="button" class="btn btn-ghost" id="btn-clear-r">🧹 Clear</button></div>
       </div>
     </aside>
   </div>
@@ -603,18 +604,45 @@ function renderM(){
 }
 $('#mform').addEventListener('input',e=>{e.target.classList.remove('invalid');renderM()});
 $('#mform').addEventListener('change',e=>{$$('#m-groups,#m-mots').forEach(x=>x.classList.remove('invalid'));renderM()});
+function missM(m){const miss=[];
+  if(!m.captain)miss.push(['name','#m-captain']);if(!m.group)miss.push(['group','#m-groups']);if(!m.origin)miss.push(['flag','#m-origin']);if(!m.dest)miss.push(['port','#m-dest']);if(!m.mot.length)miss.push(['motivation','#m-mots']);
+  m.cargo.forEach((c,i)=>{if(!c)miss.push(['cargo '+ROMAN[i],'#m-c'+(i+1)])});if(!m.pitch)miss.push(['pitch','#m-pitch']);return miss}
+$('#btn-save-m').onclick=()=>{if(exMode)return;const m=readM(),miss=missM(m);if(miss.length)return missing(miss);saveCard($('#manifest-card'),'manifest-'+m.captain)};
 $('#btn-copy-m').onclick=()=>{
   if(exMode)return toast('🔒 You can\'t copy the example. Click "Back to My Ship" to build your own.',true);
-  const m=readM(),miss=[];
-  if(!m.captain)miss.push(['name','#m-captain']);if(!m.group)miss.push(['group','#m-groups']);if(!m.origin)miss.push(['flag','#m-origin']);if(!m.dest)miss.push(['port','#m-dest']);if(!m.mot.length)miss.push(['motivation','#m-mots']);
-  m.cargo.forEach((c,i)=>{if(!c)miss.push(['cargo '+ROMAN[i],'#m-c'+(i+1)])});if(!m.pitch)miss.push(['pitch','#m-pitch']);
+  const m=readM(),miss=missM(m);
   if(miss.length)return missing(miss);
   const o=O[m.origin],p=P[m.dest];
   const text=['⚓ OFFICIAL SHIPPING MANIFEST ⚓',L,`🧑‍✈️ Captain: ${m.captain}`,m.group==='sync'?'🔵 Sync Learner (Blue post)':'🟢 Async Learner (Green post)',`${o.flag} Flag: ${o.n} (${o.yrs})`,`⛵ Ship: ${V[m.vessel].n}`,`🗺️ Bound For: ${p.n} (${p.yrs})`,`🎯 Why We Sailed: ${motTxt(m)}`,L,'📦 CARGO HOLD',...m.cargo.map((id,i)=>`${ROMAN[i]}. ${I[id].e} ${I[id].n}`),L,`🗣️ “${m.pitch}”`,L,'🔍 Inspector: check my cargo against the port laws and pick a stamp!'].join('\n');
   copyText(text,'✅ Copied! Paste it into your '+(m.group==='sync'?'BLUE':'GREEN')+' Padlet post.');
 };
 if(window.PA_STANDALONE===true){const b=$('#btn-print-m');b.hidden=false;b.onclick=()=>{if(exMode)return;document.body.classList.add('print-manifest');window.print()};window.addEventListener('afterprint',()=>document.body.classList.remove('print-manifest'))}
-$('#btn-shot-m').onclick=()=>{if(!exMode)shot($('#manifest-card'))};
+/* Save a card as a PNG: claude.ai uses the downloads capability (viewer confirms); the standalone file downloads directly. */
+let saving=false;
+async function saveCard(card,name){
+  if(saving)return;
+  if(typeof html2canvas!=='function'){shot(card);toast('Saving is not available here. Take a screenshot instead.',true);return}
+  saving=true;toast('⏳ Making your image…');
+  const fn=(String(name).normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^A-Za-z0-9 _-]+/g,'').trim().replace(/\s+/g,'-').slice(0,60)||'card')+'.png';
+  try{
+    const cv=await html2canvas(card,{scale:2,backgroundColor:'#f4ecd8',logging:false,onclone:(doc,el)=>{
+      /* html2canvas draws layered gradients and inset shadows poorly, so the saved copy uses flat parchment and wax colors */
+      el.style.background='linear-gradient(#f6efdc,#e9dec6)';el.style.boxShadow='none';el.style.outline='none';
+      el.querySelectorAll('.seal').forEach(x=>{x.style.background=x.classList.contains('navy')?'#1d3557':'#8b1e1e';x.style.boxShadow='0 2px 3px rgba(0,0,0,.3)'});
+    }});
+    const blob=await new Promise((res,rej)=>cv.toBlob(b=>b?res(b):rej(new Error('blob')),'image/png'));
+    if(window.PA_STANDALONE!==true&&window.claude&&typeof window.claude.use==='function'){
+      const dl=await window.claude.use('downloads');
+      if(!dl){shot(card);toast('Saving is off here. Take a screenshot instead.',true);return}
+      try{await dl.save({filename:fn,data:blob});toast('✅ Saved! Now upload the image to Padlet.')}
+      catch(e){if(e&&e.code==='declined')toast('Save canceled.');else if(e&&e.code==='rate_limited')toast('One moment, then try again.',true);else{shot(card);toast('Could not save here. Take a screenshot instead.',true)}}
+      return;
+    }
+    const url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=fn;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),5000);
+    toast('✅ Saved to your Downloads! Now upload the image to Padlet.');
+  }catch(e){shot(card);toast('Could not make the image. Take a screenshot instead.',true)}
+  finally{saving=false}
+}
 const EXAMPLES=[
  {captain:'Capitão Afonso Menezes',group:'sync',origin:'port',dest:'calicut',mot:['gold'],cargo:['silver','horses','chili','ivory'],pitch:'Great Emperor Akbar, we bring silver, strong horses, ivory, and spicy chili peppers from across the sea. We ask your permission to trade in peace.'},
  {captain:'Capitão João Pereira',group:'async',origin:'port',dest:'macau',mot:['gold'],cargo:['silver','spices','ivory','maize'],pitch:'Officials of the Ming, we bring pure silver, spices, ivory, and a new grain called maize. We will stay in Macau and go back to our ship every night, just like your law says.'},
@@ -625,7 +653,7 @@ let ex=-1,exMode=false;
 function setExample(on){
   exMode=on;$('#manifest-card').classList.toggle('is-example',on);$('#ex-banner').hidden=!on;
   $$('#mform input,#mform select,#mform textarea').forEach(e=>{e.disabled=on});
-  ['#btn-copy-m','#btn-shot-m','#btn-print-m','#btn-clear-m'].forEach(s=>{$(s).disabled=on});
+  ['#btn-copy-m','#btn-save-m','#btn-print-m','#btn-clear-m'].forEach(s=>{$(s).disabled=on});
   $('#btn-copy-m').textContent=on?'🔒 Copy is turned off for examples':'📋 Copy Manifest for Padlet';
   $('#btn-example').textContent=on?'🎲 Next Example':'🎲 Example Ship';
 }
@@ -660,10 +688,12 @@ function renderR(){
 $('#rform').addEventListener('input',e=>{e.target.classList.remove('invalid');renderR()});
 $('#rform').addEventListener('change',()=>{$('#i-groups').classList.remove('invalid');renderR()});
 $$('.vbtn').forEach(b=>b.onclick=()=>{verdict=b.dataset.v;$('#i-verdicts').classList.remove('invalid');renderR()});
+function missR(r){const miss=[];
+  if(!r.name)miss.push(['name','#i-name']);if(!r.group)miss.push(['group','#i-groups']);if(!r.ship)miss.push(['ship','#i-ship']);if(!r.port)miss.push(['port','#i-port']);if(!r.verdict)miss.push(['stamp','#i-verdicts']);if(!r.catch)miss.push(['findings','#i-catch']);if(!r.impact)miss.push(['what happened','#i-impact']);return miss}
+$('#btn-save-r').onclick=()=>{if(exModeR)return;const r=readR(),miss=missR(r);if(miss.length)return missing(miss);saveCard($('#report-card'),'inspection-'+r.name)};
 $('#btn-copy-r').onclick=()=>{
   if(exModeR)return toast('🔒 You can\'t copy the example. Click "Back to My Report" to write your own.',true);
-  const r=readR(),miss=[];
-  if(!r.name)miss.push(['name','#i-name']);if(!r.group)miss.push(['group','#i-groups']);if(!r.ship)miss.push(['ship','#i-ship']);if(!r.port)miss.push(['port','#i-port']);if(!r.verdict)miss.push(['stamp','#i-verdicts']);if(!r.catch)miss.push(['findings','#i-catch']);if(!r.impact)miss.push(['what happened','#i-impact']);
+  const r=readR(),miss=missR(r);
   if(miss.length)return missing(miss);
   const p=P[r.port],v=VERD[r.verdict];
   const text=['📜 PORT AUTHORITY CUSTOMS REPORT 📜',L,`🕵️ Inspector: ${r.name}`,r.group==='sync'?'🔵 Sync Inspector reviewing a 🟢 Green Async Post':'🟢 Async Inspector reviewing a 🔵 Blue Sync Post',`🚢 Ship: ${r.ship}`,`⚓ Port: ${p.n} (${p.yrs})`,L,`${v[0]} VERDICT: ${v[1]}`,L,`🔍 Findings: ${r.catch}`,'',`📖 What Really Happened: ${r.impact}`].join('\n');
@@ -681,7 +711,7 @@ let exR=-1,exModeR=false;
 function setExampleR(on){
   exModeR=on;$('#report-card').classList.toggle('is-example',on);$('#ex-banner-r').hidden=!on;
   $$('#rform input,#rform select,#rform textarea,#rform .vbtn').forEach(e=>{e.disabled=on});
-  ['#btn-copy-r','#btn-clear-r'].forEach(s=>{$(s).disabled=on});
+  ['#btn-copy-r','#btn-save-r','#btn-clear-r'].forEach(s=>{$(s).disabled=on});
   $('#btn-copy-r').textContent=on?'🔒 Copy is turned off for examples':'📋 Copy Report for Padlet Comment';
   $('#btn-example-r').textContent=on?'🎲 Next Example':'🎲 Example Report';
 }
